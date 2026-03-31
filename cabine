@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Cabine virtuelle 2D avec défilement</title>
+<style>
+  body { font-family:sans-serif; text-align:center; margin-top:20px; }
+  #avatar-container {
+    position: relative;
+    width: 300px; height: 400px;
+    margin:auto; border:1px solid #ccc;
+  }
+  #avatar-container img { position:absolute; top:0; left:0; width:100%; height:100%; }
+  .category { margin: 10px 0; }
+  button { margin: 2px; padding: 5px 10px; font-size:12px; }
+</style>
+</head>
+<body>
+
+<h2>Cabine virtuelle 2D – Défilement</h2>
+<div id="avatar-container">
+  <img id="base" src="CabinAvatar/base.png" alt="Avatar de base">
+</div>
+
+<div id="menus"></div>
+
+<script>
+// Définition des catégories et options
+const categories = {
+  "tenues": ["tenues/tenue1.png"],
+  "tops": ["tops/top1.png","tops/top2.png"],
+  "bas": ["bas/bas1.png","bas/bas2.png"],
+  "cheveux": ["cheveux/cheveux1.png","cheveux/cheveux2.png"],
+  "yeux": ["yeux/yeux1.png"],
+  "sourcils": ["sourcils/sourcils1.png"],
+  "nez": ["nez/nez1.png"],
+  "bouche": ["bouche/bouche1.png"],
+  "maquillage": ["maquillage/maquillage1.png"],
+  "bijoux": ["bijoux/bijoux1.png"],
+  "chaussures": ["chaussures/chaussures1.png"]
+};
+
+const avatarContainer = document.getElementById("avatar-container");
+const menusDiv = document.getElementById("menus");
+
+const layers = {};
+const indices = {}; // pour suivre quelle option est sélectionnée par catégorie
+
+for(let cat in categories){
+  // Image calque
+  const img = document.createElement("img");
+  img.id = cat;
+  img.style.display = "none"; // masqué au début
+  img.src = categories[cat][0];
+  avatarContainer.appendChild(img);
+  layers[cat] = img;
+  indices[cat] = 0;
+
+  // Menu
+  const menu = document.createElement("div");
+  menu.className = "category";
+  const label = document.createElement("strong");
+  label.innerText = cat.toUpperCase() + ": ";
+  menu.appendChild(label);
+
+  // Bouton précédent
+  const prev = document.createElement("button");
+  prev.innerText = "<";
+  prev.onclick = ()=>{
+    indices[cat]--;
+    if(indices[cat]<-1) indices[cat] = categories[cat].length-1;
+    updateLayer(cat);
+  };
+  menu.appendChild(prev);
+
+  // Bouton suivant
+  const next = document.createElement("button");
+  next.innerText = ">";
+  next.onclick = ()=>{
+    indices[cat]++;
+    if(indices[cat]>categories[cat].length-1) indices[cat] = -1;
+    updateLayer(cat);
+  };
+  menu.appendChild(next);
+
+  menusDiv.appendChild(menu);
+}
+
+// Fonction pour mettre à jour l'affichage
+function updateLayer(cat){
+  const idx = indices[cat];
+  if(idx === -1){
+    layers[cat].style.display = "none";
+  } else {
+    layers[cat].src = categories[cat][idx];
+    layers[cat].style.display = "block";
+  }
+}
+</script>
+</body>
+</html>
